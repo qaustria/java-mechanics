@@ -3,12 +3,19 @@
     "version": "0.0.1",
     "description": "Example of a GameTest module",
     "main": "main.js",
-    "scripts": {},
+    "scripts": {
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+    },
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@minecraft/server": "2.1.0-beta.1.21.90-stable",
-        "@minecraft/server-ui": "2.0.0",
+        "@minecraft/server": "2.7.0-beta.1.26.12-stable",
+        "@minecraft/server-gametest": "1.0.0-beta.1.26.12-stable",
+        "@minecraft/server-ui": "2.1.0-beta.1.26.12-stable",
+        "@minecraft/vanilla-data": "1.26.12",
         "mcbe-ipc": "3.0.4"
+    },
+    "devDependencies": {
+        "typescript": "6.0.2"
     }
 }

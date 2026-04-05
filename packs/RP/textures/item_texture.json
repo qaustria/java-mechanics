@@ -1,0 +1,51 @@
+{
+    "resource_pack_name": "SweepNSlash",
+    "texture_name": "atlas.items",
+    "texture_data": {
+        "wood_sword": {
+            "textures": "textures/items/wood_sword"
+        },
+        "gold_sword": {
+            "textures": "textures/items/gold_sword"
+        },
+        "stone_sword": {
+            "textures": "textures/items/stone_sword"
+        },
+        "copper_sword": {
+            "textures": "textures/items/copper_sword"
+        },
+        "iron_sword": {
+            "textures": "textures/items/iron_sword"
+        },
+        "diamond_sword": {
+            "textures": "textures/items/diamond_sword"
+        },
+        "netherite_sword": {
+            "textures": "textures/items/netherite_sword"
+        },
+        "wood_axe": {
+            "textures": "textures/items/wood_axe"
+        },
+        "gold_axe": {
+            "textures": "textures/items/gold_axe"
+        },
+        "stone_axe": {
+            "textures": "textures/items/stone_axe"
+        },
+        "copper_axe": {
+            "textures": "textures/items/copper_axe"
+        },
+        "iron_axe": {
+            "textures": "textures/items/iron_axe"
+        },
+        "diamond_axe": {
+            "textures": "textures/items/diamond_axe"
+        },
+        "netherite_axe": {
+            "textures": "textures/items/netherite_axe"
+        },
+        "shield": {
+            "textures": "textures/items/shield"
+        }
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "format_version": "1.21.110",
+    "minecraft:item": {
+        "description": {
+            "identifier": "sns:golden_axe",
+            "menu_category": {
+                "category": "equipment"
+            }
+        },
+        "components": {
+            "minecraft:allow_off_hand": {
+                "value": true
+            },
+            "minecraft:can_destroy_in_creative": false,
+            "minecraft:icon": "gold_axe",
+            "minecraft:hand_equipped": true,
+            "minecraft:max_stack_size": 1,
+            "minecraft:use_modifiers": {
+                "use_duration": 999999,
+                "movement_modifier": 0.6
+            },
+            "minecraft:durability": {
+                "max_durability": 32
+            },
+            "minecraft:digger": {
+                "use_efficiency": true,
+                "destroy_speeds": [
+                    {
+                        "block": {
+                            "tags": "query.any_tag('wood','pumpkin','text_sign')"
+                        },
+                        "speed": 6
+                    }
+                ]
+            },
+            "minecraft:enchantable": {
+                "slot": "axe",
+                "value": 22
+            },
+            "minecraft:tags": {
+                "tags": ["minecraft:is_axe", "minecraft:is_tool"]
+            }
+        }
+    }
+}

@@ -1,5 +1,18 @@
 pack.name=Sweep 'N Slash - Behavior Pack
 pack.description=Converts Bedrock Edition's combat into Java Edition's 1.9+ combat.
 
-
-
+item.sns:wooden_sword.name=Wooden Sword
+item.sns:golden_sword.name=Golden Sword
+item.sns:stone_sword.name=Stone Sword
+item.sns:copper_sword.name=Copper Sword
+item.sns:iron_sword.name=Iron Sword
+item.sns:diamond_sword.name=Diamond Sword
+item.sns:netherite_sword.name=Netherite Sword
+item.sns:wooden_axe.name=Wooden Axe
+item.sns:golden_axe.name=Golden Axe
+item.sns:stone_axe.name=Stone Axe
+item.sns:copper_axe.name=Copper Axe
+item.sns:iron_axe.name=Iron Axe
+item.sns:diamond_axe.name=Diamond Axe
+item.sns:netherite_axe.name=Netherite Axe
+item.sns:shield.name=Shield

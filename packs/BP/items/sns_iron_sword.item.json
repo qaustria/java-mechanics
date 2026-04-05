@@ -1,0 +1,47 @@
+{
+    "format_version": "1.21.110",
+    "minecraft:item": {
+        "description": {
+            "identifier": "sns:iron_sword",
+            "menu_category": {
+                "category": "equipment"
+            }
+        },
+        "components": {
+            "minecraft:allow_off_hand": {
+                "value": true
+            },
+            "minecraft:can_destroy_in_creative": false,
+            "minecraft:icon": "iron_sword",
+            "minecraft:hand_equipped": true,
+            "minecraft:max_stack_size": 1,
+            "minecraft:use_modifiers": {
+                "use_duration": 999999,
+                "movement_modifier": 0.6
+            },
+            "minecraft:durability": {
+                "max_durability": 250
+            },
+            "minecraft:digger": {
+                "use_efficiency": true,
+                "destroy_speeds": [
+                    {
+                        "block": "minecraft:web",
+                        "speed": 15
+                    },
+                    {
+                        "block": "minecraft:bamboo",
+                        "speed": 60
+                    }
+                ]
+            },
+            "minecraft:enchantable": {
+                "slot": "sword",
+                "value": 14
+            },
+            "minecraft:tags": {
+                "tags": ["minecraft:is_sword", "minecraft:is_tool"]
+            }
+        }
+    }
+}

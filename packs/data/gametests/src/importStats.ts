@@ -21,12 +21,14 @@ import { vanillaThrowingKnives } from './weaponStats/tcc/vanilla_throwing_knives
 import { trueWeapons } from './weaponStats/true_wp';
 import { vanilla } from './weaponStats/vanilla';
 import { vsprsSpears } from './weaponStats/vsprs_spears';
+import { sns } from './weaponStats/sns';
 
 import { vanillaEntities } from './entityStats/vanilla';
 
 export const importStats: { items: WeaponStats[]; moduleName: string }[] = [
     { items: exampleArray, moduleName: 'example_file' },
     { items: vanilla, moduleName: 'vanilla' },
+    { items: sns, moduleName: 'sns' },
     { items: betterOnBedrock, moduleName: 'better_on_bedrock' },
     { items: vanillaKnives, moduleName: 'tcc_knives' },
     { items: vanillaThrowingKnives, moduleName: 'tcc_throwing_knives' },

@@ -1,5 +1,20 @@
 pack.name=§3Sweep §f'N §6Slash §f- Resource Pack
 pack.description=Converts Bedrock Edition's combat into Java Edition's 1.9+ combat.
+item.sns:wooden_sword=Wooden Sword
+item.sns:golden_sword=Golden Sword
+item.sns:stone_sword=Stone Sword
+item.sns:copper_sword=Copper Sword
+item.sns:iron_sword=Iron Sword
+item.sns:diamond_sword=Diamond Sword
+item.sns:netherite_sword=Netherite Sword
+item.sns:wooden_axe=Wooden Axe
+item.sns:golden_axe=Golden Axe
+item.sns:stone_axe=Stone Axe
+item.sns:copper_axe=Copper Axe
+item.sns:iron_axe=Iron Axe
+item.sns:diamond_axe=Diamond Axe
+item.sns:netherite_axe=Netherite Axe
+item.sns:shield=Shield
 
 attribute.name.generic.attackDamage=§r
 sweepnslash.item.modifiers.mainhand=When in Main Hand:

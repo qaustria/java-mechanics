@@ -24,6 +24,18 @@ import {
 } from './mathAndCalculations.js';
 import { clampNumber } from './minecraft-math.js';
 
+const SNS_SHIELD_ID = 'sns:shield';
+const shieldAnimations: Record<string, string | undefined> = {};
+
+function getHeldSnsShield(player: Player) {
+    const equippable = player.getComponent('equippable');
+    const offhand = equippable?.getEquipment('Offhand');
+    if (offhand?.typeId === SNS_SHIELD_ID) return { hand: 'off_hand' as const };
+    const mainhand = equippable?.getEquipment('Mainhand');
+    if (mainhand?.typeId === SNS_SHIELD_ID) return { hand: 'main_hand' as const };
+    return undefined;
+}
+
 // Gametest module import
 let SimulatedPlayer;
 let gametest = true;
@@ -39,6 +51,7 @@ import('@minecraft/server-gametest')
 // Custom component registry, required to fetch basic stats from custom components in items
 system.beforeEvents.startup.subscribe(({ itemComponentRegistry }) => {
     itemComponentRegistry.registerCustomComponent('sweepnslash:stats', {});
+    itemComponentRegistry.registerCustomComponent('sweepnslash:shield', {});
 });
 
 // If it's the first time running the add-on, set up the world
@@ -361,11 +374,37 @@ system.runInterval(() => {
 
         // If the player has shield up, run delay check
         // Crucial for making sure the attacker does not get knocked back
-        if (!(Check.shield(player) && !status.holdInteract)) {
-            status.lastShieldTime = currentTick;
+        const activeShield = Check.shield(player);
+        if (activeShield) status.lastShieldTime = currentTick;
+        status.shieldValid = activeShield;
+
+        const snsShield = getHeldSnsShield(player);
+        const shieldAnim =
+            snsShield
+                ? status.holdInteract
+                    ? `animation.sns.player.shield_block_${snsShield.hand}`
+                    : `animation.sns.player.shield_hold_${snsShield.hand}`
+                : undefined;
+
+        if (!shieldAnim && shieldAnimations[player.id]) {
+            player.playAnimation(shieldAnimations[player.id], {
+                blendOutTime: 0,
+                stopExpression: 'return true;',
+            });
+            delete shieldAnimations[player.id];
+        } else if (shieldAnim && shieldAnimations[player.id] !== shieldAnim) {
+            if (shieldAnimations[player.id]) {
+                player.playAnimation(shieldAnimations[player.id], {
+                    blendOutTime: 0,
+                    stopExpression: 'return true;',
+                });
+            }
+            player.playAnimation(shieldAnim, {
+                blendOutTime: 99999,
+                stopExpression: 'return false;',
+            });
+            shieldAnimations[player.id] = shieldAnim;
         }
-        const shieldTime = currentTick - status.lastShieldTime;
-        status.shieldValid = shieldTime >= 5 || shieldTime == 1;
 
         // If the player changes the slot, run cooldown
         if (
@@ -629,11 +668,11 @@ world.afterEvents.playerSwingStart.subscribe(({ player, swingSource }) => {
     //     return;
     // }
 
-    // if (status.rightClick == true) {
-    //     status.rightClick = false;
-    //     status.lastShieldTime = system.currentTick;
-    //     return;
-    // }
+    if (status.rightClick == true) {
+        status.rightClick = false;
+        status.lastShieldTime = system.currentTick;
+        return;
+    }
 
     //if (Check.block(player) && !Check.view(player)) return;
 
@@ -655,12 +694,30 @@ world.afterEvents.playerInventoryItemChange.subscribe(({ player: source, slot })
 world.afterEvents.itemStartUse.subscribe(({ source: player, itemStack }) => {
     const status = player.getStatus();
     status.holdInteract = true;
+    status.rightClick = true;
+    status.lastShieldTime = system.currentTick;
+    if (itemStack?.hasFlag('kinetic_weapon')) status.chargeAttacking = true;
+});
+
+world.afterEvents.itemUse.subscribe(({ source: player, itemStack }) => {
+    if (!(player instanceof Player)) return;
+    const status = player.getStatus();
+    status.rightClick = true;
+    status.lastShieldTime = system.currentTick;
     if (itemStack?.hasFlag('kinetic_weapon')) status.chargeAttacking = true;
 });
 
 world.afterEvents.itemStopUse.subscribe(({ source: player, itemStack }) => {
     const status = player.getStatus();
     status.holdInteract = false;
+    status.rightClick = false;
+    if (itemStack?.hasFlag('kinetic_weapon')) status.chargeAttacking = false;
+});
+
+world.afterEvents.itemReleaseUse.subscribe(({ source: player, itemStack }) => {
+    const status = player.getStatus();
+    status.holdInteract = false;
+    status.rightClick = false;
     if (itemStack?.hasFlag('kinetic_weapon')) status.chargeAttacking = false;
 });
 
@@ -758,6 +815,56 @@ world.afterEvents.entityHitEntity.subscribe(({ damagingEntity: player, hitEntity
 
     if (target?.isValid && player?.getComponent('health')?.currentValue > 0)
         AttackCooldownManager.forPlayer(player).onHit(target);
+});
+
+world.beforeEvents.entityHurt.subscribe((event) => {
+    const { hurtEntity, damageSource } = event;
+    if (!(hurtEntity instanceof Player) || !hurtEntity.isValid) return;
+    if (world.getDynamicProperty('addon_toggle') == false) return;
+
+    const status = hurtEntity.getStatus();
+    if (Check.shield(hurtEntity) && status.shieldValid) {
+        const validShieldCauses = [
+            EntityDamageCause.entityAttack,
+            EntityDamageCause.entityExplosion,
+            EntityDamageCause.projectile,
+        ];
+        if (!validShieldCauses.includes(damageSource.cause)) return;
+
+        const attacker = damageSource.damagingEntity;
+        if (attacker?.isValid && !Check.angle(attacker, hurtEntity)) return;
+
+        event.cancel = true;
+
+        const projectile = damageSource.damagingProjectile;
+        if (damageSource.cause === EntityDamageCause.projectile && projectile?.isValid) {
+            const vel = projectile.getVelocity();
+            const head = hurtEntity.getHeadLocation();
+            const view = hurtEntity.getViewDirection();
+            system.run(() => {
+                if (projectile.typeId === 'minecraft:arrow') {
+                    const reflectedArrow = hurtEntity.dimension.spawnEntity('minecraft:arrow', {
+                        x: head.x + view.x * 0.75,
+                        y: head.y - 0.2,
+                        z: head.z + view.z * 0.75,
+                    });
+                    reflectedArrow.applyImpulse({
+                        x: -vel.x / 2,
+                        y: -vel.y / 2,
+                        z: -vel.z / 2,
+                    });
+                }
+                hurtEntity.dimension.playSound('item.shield.block', hurtEntity.location);
+            });
+        } else {
+            system.run(() => {
+                try {
+                    hurtEntity.extinguishFire();
+                } catch {}
+                hurtEntity.dimension.playSound('item.shield.block', hurtEntity.location);
+            });
+        }
+    }
 });
 
 // For when the entity is hurt. Handles iframes.

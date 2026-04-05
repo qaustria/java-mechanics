@@ -47,6 +47,8 @@ const biomeArray = [
     'minecraft:frozen_peaks',
 ];
 
+const SHIELD_ITEM_IDS = new Set(['minecraft:shield', 'sns:shield']);
+
 // This is used to check for debug mode, which is accessible in configuration menu.
 export function debug(message) {
     // Calling getDynamicProperty here caused a massive performance issue.
@@ -891,17 +893,33 @@ export class Check {
         return inViewEntities.some((e) => player === e);
     }
 
+    static backstab(player, target) {
+        const viewDir = target.getViewDirection();
+        viewDir.y = 0;
+
+        const toAttacker = sub(player.location, target.location);
+        toAttacker.y = 0;
+
+        if ((viewDir.x === 0 && viewDir.z === 0) || (toAttacker.x === 0 && toAttacker.z === 0)) {
+            return false;
+        }
+
+        const angle = calculateAngle(viewDir, toAttacker);
+        return !isNaN(angle) && angle >= 135;
+    }
+
     // Shield valid check.
     static shield(target) {
         const slot = ['Mainhand', 'Offhand'];
         const targetEquippable = target.getComponent('equippable');
         const shieldCooldown = target.getItemCooldown('minecraft:shield');
+        const status = target.getStatus();
 
         let isBlocking = false;
 
         for (const s of slot) {
-            const shieldItem = targetEquippable?.getEquipment(s)?.typeId === 'minecraft:shield'; // Check if the target is sneaking and shield cooldown is 0
-            if (shieldItem && (target.isSneaking || target.isRiding) && shieldCooldown == 0) {
+            const shieldItem = SHIELD_ITEM_IDS.has(targetEquippable?.getEquipment(s)?.typeId);
+            if (shieldItem && status.holdInteract && shieldCooldown == 0) {
                 isBlocking = true;
             }
         }
